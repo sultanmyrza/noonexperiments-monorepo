@@ -37,3 +37,8 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Ignore native build directories (android/ & ios/) as they are auto-generated
+# by Expo's Continuous Native Generation (CNG) see https://docs.expo.dev/workflow/continuous-native-generation/
+/android
+/ios
