@@ -8,7 +8,18 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "prebuild:ios": "npx expo prebuild --platform ios --clean",
+    "prebuild:android": "npx expo prebuild --platform android --clean",
+    "eas:build:development:locally:ios": "time eas build --profile development --local --platform ios",
+    "eas:build:development:locally:android": "time eas build --profile development --local --platform android",
+    "eas:build:preview:locally:ios": "time eas build --profile preview --local --platform ios",
+    "eas:build:preview:locally:android": "time eas build --profile preview --local --platform android",
+    "eas:build:production:locally:ios": "time eas build --profile production --local --platform ios",
+    "eas:build:production:locally:android": "time eas build --profile production --local --platform android",
+    "eas:submit:production:android": "time eas submit --platform android --profile production",
+    "eas:submit:production:ios": "time eas submit --platform ios --profile production",
+    "eas:clean:local:artifacts": "rm -f build-*.{apk,aab,ipa}"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
