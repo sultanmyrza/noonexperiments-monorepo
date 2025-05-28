@@ -9,6 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "postinstall": "patch-package",
     "prebuild:ios": "npx expo prebuild --platform ios --clean",
     "prebuild:android": "npx expo prebuild --platform android --clean",
     "eas:build:development:locally:ios": "time eas build --profile development --local --platform ios",
