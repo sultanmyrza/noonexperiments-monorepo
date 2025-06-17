@@ -44,11 +44,11 @@
         {
           "iosActivationRules": {
             "NSExtensionActivationSupportsText": true,
-            "NSExtensionActivationSupportsWebURLWithMaxCount": 1,
-            "NSExtensionActivationSupportsWebPageWithMaxCount": 1,
-            "NSExtensionActivationSupportsImageWithMaxCount": 1,
-            "NSExtensionActivationSupportsMovieWithMaxCount": 1,
-            "NSExtensionActivationSupportsFileWithMaxCount": 1
+            "NSExtensionActivationSupportsWebURLWithMaxCount": 5,
+            "NSExtensionActivationSupportsWebPageWithMaxCount": 5,
+            "NSExtensionActivationSupportsImageWithMaxCount": 5,
+            "NSExtensionActivationSupportsMovieWithMaxCount": 5,
+            "NSExtensionActivationSupportsFileWithMaxCount": 5
           },
           "androidIntentFilters": ["text/*", "image/*", "video/*"]
         }
