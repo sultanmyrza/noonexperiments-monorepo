@@ -42,3 +42,8 @@ app-example
 # by Expo's Continuous Native Generation (CNG) see https://docs.expo.dev/workflow/continuous-native-generation/
 /android
 /ios
+
+# Expo eas build artifacts (Android & iOS)
+build-*.apk 
+build-*.aab 
+build-*.ipa 
