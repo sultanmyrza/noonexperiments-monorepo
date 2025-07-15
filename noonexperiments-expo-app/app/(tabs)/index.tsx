@@ -6,7 +6,59 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+import { useState } from 'react';
+import { MediaStream, mediaDevices } from 'react-native-webrtc';
+
+const configuration = {
+  iceServers: [
+    {
+      urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+    },
+  ],
+  iceCandidatePoolSize: 10,
+};
+
 export default function HomeScreen() {
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+
+  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
+
+  const initializePeerConnection = (): RTCPeerConnection => {
+    const peerConnection = new RTCPeerConnection(configuration);
+
+    // Handle incoming remote stream
+    peerConnection.ontrack = (event) => {
+      console.log('Received remote stream');
+      if (event.streams && event.streams[0]) {
+        setRemoteStream(event.streams[0] as unknown as MediaStream);
+      }
+    };
+
+    return peerConnection;
+  };
+
+  const startCameraStream = async () => {
+    const pc = new RTCPeerConnection(configuration);
+
+    const stream = await mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
+    setLocalStream(stream);
+
+    pc.ontrack = (event) => {
+      const mediaStream = event.streams[0];
+      setRemoteStream(mediaStream); // ts-error: Type 'MediaStream' is missing the following properties from type 'MediaStream': _tracks, _id, _reactTag, toURL, release
+    };
+
+    setPeerConnection(pc);
+  };
+
+  const stopCameraStream = () => {
+    peerConnection?.close();
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -15,7 +67,8 @@ export default function HomeScreen() {
           source={require('@/assets/images/partial-react-logo.png')}
           style={styles.reactLogo}
         />
-      }>
+      }
+    >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
