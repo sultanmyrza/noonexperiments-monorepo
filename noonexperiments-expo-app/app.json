@@ -45,7 +45,8 @@
         {
           "enableBackgroundRemoteNotifications": true
         }
-      ]
+      ],
+      "expo-task-manager"
     ],
     "experiments": {
       "typedRoutes": true

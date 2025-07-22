@@ -4,16 +4,22 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
 import { Image } from "expo-image";
+import * as TaskManager from "expo-task-manager";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
 export default function HomeScreen() {
   const [expoPushToken, setExpoPushToken] = useState("");
+  const [registeredTasks, setRegisteredTasks] = useState("");
 
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? ""))
       .catch((error: any) => setExpoPushToken(`${error}`));
+
+    TaskManager.getRegisteredTasksAsync()
+      .then((tasks) => setRegisteredTasks(JSON.stringify(tasks, null, 2)))
+      .catch((error) => setRegisteredTasks(error));
   }, []);
 
   return (
@@ -32,7 +38,13 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Expo Push Token</ThemedText>
-        <ThemedText selectable numberOfLines={1}>{expoPushToken}</ThemedText>
+        <ThemedText selectable numberOfLines={1}>
+          {expoPushToken}
+        </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 2: Registered Tasks</ThemedText>
+        <ThemedText style={{ fontSize: 12 }}>{registeredTasks}</ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   );
