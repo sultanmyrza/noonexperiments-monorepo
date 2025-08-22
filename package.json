@@ -1,4 +1,8 @@
 {
   "name": "noonexperiments-monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "packageManager": "yarn@4.9.1"
 }
