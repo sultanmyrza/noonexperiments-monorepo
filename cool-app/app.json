@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sultanmyrza.coolapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +21,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": true
+      "predictiveBackGestureEnabled": true,
+      "package": "com.sultanmyrza.coolapp"
     },
     "web": {
       "output": "static",
@@ -38,6 +43,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "23d815db-39e4-4194-8fe0-32090f2ea175"
+      }
     }
   }
 }
