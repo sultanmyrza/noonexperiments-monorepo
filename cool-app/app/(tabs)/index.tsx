@@ -1,75 +1,85 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { ThemedButton } from '@/components/ThemedButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useRef, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
 export default function HomeScreen() {
+  const webViewRef = useRef<WebView>(null);
+  const webViewUri = process.env.EXPO_PUBLIC_WEB_VIEW_URL;
+  const marginBottom = useBottomTabOverflow();
+  const [lastMessageFromWeb, setLastMessageFromWeb] = useState<string>('No messages yet');
+
+  const borderColor = useThemeColor({}, 'icon');
+
+  const handleOnMessage = (event: WebViewMessageEvent) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      setLastMessageFromWeb(data.message || 'Unknown message');
+    } catch (error) {
+      console.error('[TabWebView] Failed to parse message: ', error);
+    }
+  };
+
+  const sendMessageToWeb = () => {
+    const message = `Hello from React Native! ${new Date().toLocaleTimeString()}`;
+    webViewRef.current?.postMessage(JSON.stringify({ message }));
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaView style={[styles.container, { marginBottom }]} edges={['top']}>
+      {/* React Native Row */}
+      <ThemedView style={styles.reactNativeRow}>
+        <ThemedText type="title">React Native</ThemedText>
+        <ThemedButton onPress={sendMessageToWeb}>
+          <ThemedText>Send Message to WebView</ThemedText>
+        </ThemedButton>
+        <ThemedView style={[styles.messageArea, { borderColor }]}>
+          <ThemedText>Last message from WebView:</ThemedText>
+          <ThemedText>{lastMessageFromWeb}</ThemedText>
+        </ThemedView>
+      </ThemedView>
+
+      {/* WebView Row */}
+      <ThemedView style={styles.webviewRow}>
+        <WebView
+          ref={webViewRef}
+          source={{ uri: webViewUri }}
+          style={styles.webview}
+          javaScriptEnabled
+          domStorageEnabled
+          startInLoadingState
+          webviewDebuggingEnabled={__DEV__}
+          onMessage={handleOnMessage}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  container: {
+    flex: 1,
+  },
+  reactNativeRow: {
+    flex: 1,
+    padding: 20,
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  webviewRow: {
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  webview: {
+    flex: 1,
+  },
+  messageArea: {
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
   },
 });

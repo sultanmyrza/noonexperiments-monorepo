@@ -1,13 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="./src/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>WebView Post Message Experiment</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <div class="container">
+      <h1 class="title">WebView</h1>
+      <button class="button" onclick="sendMessageToReactNative()">
+        Send Message to React Native
+      </button>
+      <div class="message-area">
+        <div class="message-label">Last message from React Native:</div>
+        <div class="message-text" id="lastMessage">No messages yet</div>
+      </div>
+    </div>
+
+    <script>
+      let lastMessageElement = document.getElementById("lastMessage");
+
+      function sendMessageToReactNative() {
+        const message = `Hello from WebView! ${new Date().toLocaleTimeString()}`;
+        const data = JSON.stringify({ message });
+
+        // Send message to React Native
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(data);
+        } else {
+          console.log(
+            "ReactNativeWebView not available, message would be:",
+            data
+          );
+        }
+      }
+
+      // Listen for messages from React Native
+      document.addEventListener("message", function (event) {
+        try {
+          const data = JSON.parse(event.data);
+          lastMessageElement.textContent = data.message || "Unknown message";
+        } catch (error) {
+          console.error("Failed to parse message from React Native:", error);
+        }
+      });
+
+      // Also listen for messages via window.addEventListener (alternative method)
+      window.addEventListener("message", function (event) {
+        try {
+          const data = JSON.parse(event.data);
+          lastMessageElement.textContent = data.message || "Unknown message";
+        } catch (error) {
+          console.error("Failed to parse message from React Native:", error);
+        }
+      });
+    </script>
   </body>
 </html>
