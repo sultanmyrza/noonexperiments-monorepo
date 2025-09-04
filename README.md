@@ -1,47 +1,86 @@
-# NoonExperiments Monorepo
+# Post Message Communication Demo
 
-This repository serves as a testing ground for React Native Expo applications and third-party library integrations. It is designed to:
+A React Native Expo app demonstrating two-way post message communication between React Native and WebView.
 
-- Experiment with various React Native features and capabilities
-- Test third-party library implementations
-- Provide reproducible examples for feature requests and bug reports
-- Serve as a reference for common React Native development patterns
+## Features
 
-## Purpose
+- ✅ Two-way post message communication
+- ✅ Light/Dark mode support
+- ✅ Works on iOS and Android
+- ✅ Real-time message display
 
-The main goal of this monorepo is to maintain a collection of isolated, well-documented experiments that can be used to demonstrate specific functionalities, reproduce issues, or showcase implementation approaches in React Native development.
+## Video Previews
+
+### iOS Demo
+
+https://github.com/user-attachments/assets/b5665f7a-d32b-47ed-8e13-9eca00a0dfb2
+
+### Android Demo  
+
+https://github.com/user-attachments/assets/c022d3a5-74fb-4982-b291-cec933914d2a
+
+## Setup
+
+### 1. Install Dependencies
+
+```bash
+# Install React Native app dependencies
+cd cool-app
+yarn install
+
+# Install web app dependencies
+cd ../cool-web
+yarn install
+```
+
+### 2. Start the Web App
+
+```bash
+cd cool-web
+yarn dev
+```
+
+Vite will show a network URL like `http://192.168.1.100:5173`
+
+### 3. Configure Environment
+
+Create `.env.local` in the `cool-app` directory:
+
+```bash
+cd cool-app
+echo "EXPO_PUBLIC_WEB_VIEW_URL=http://192.168.1.100:5173" > .env.local
+```
+
+Replace `http://192.168.1.100:5173` with the actual network URL from Vite.
+
+### 4. Start the React Native App
+
+```bash
+cd cool-app
+yarn start
+```
+
+### 5. Run on Device
+
+1. Scan the QR code with your camera (iOS) or Expo Go app (Android)
+2. The app will load with the WebView showing the web interface
+3. Test the post message communication by tapping buttons on both sides
+
+## How It Works
+
+- **React Native side**: Sends messages to WebView and displays received messages
+- **WebView side**: Sends messages to React Native and displays received messages
+- **Communication**: Uses `postMessage` API for bidirectional communication
+- **Theming**: Automatic light/dark mode support using system preferences
 
 ## Project Structure
 
-The monorepo consists of the following main components:
-
-### Main Application
-
-- `noonexperiments-expo-app`: The primary React Native Expo application where all experiments are implemented and run.
-
-### Supplementary Projects
-
-Additional projects that support the main application:
-
-- `noonexperiments-firebase`: Firebase-related resources (emulators, Cloud Functions)
-- `noonexperiments-backend`: Backend services and APIs
-- Additional supporting projects as needed for specific experiments
-
-Each supplementary project is designed to provide the necessary infrastructure and services to support various experiments in the main application.
-
-## Branch Naming Convention
-
-Each experiment should be in its own branch following the naming pattern:
-
 ```
-experiments-[LIBRARY]-[SPECIFIC-FEATURE-OR-ISSUE]
+cool-app/          # React Native Expo app
+├── app/(tabs)/    # Main app screens
+├── components/    # Themed components (ThemedButton, ThemedText, etc.)
+└── .env.local     # Environment configuration
+
+cool-web/          # Web app for WebView
+└── index.html     # Single file web app with post message functionality
 ```
-
-Examples:
-
-- `experiments-webview-post-message`
-- `experiments-expo-share-intent`
-- `experiments-firebase-deep-linking`
-- `experiments-react-navigation-modal-stack`
-
-This naming convention helps in quickly identifying the purpose and scope of each experiment branch.
