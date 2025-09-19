@@ -1,47 +1,85 @@
-# NoonExperiments Monorepo
+# Issue: EAS CLI keeps asking for Apple Team ID despite environment variables being set in eas.json
 
-This repository serves as a testing ground for React Native Expo applications and third-party library integrations. It is designed to:
+## Summary
 
-- Experiment with various React Native features and capabilities
-- Test third-party library implementations
-- Provide reproducible examples for feature requests and bug reports
-- Serve as a reference for common React Native development patterns
+`eas build --local --platform ios` continues to prompt for Apple Team ID selection even when the required environment variables (`EXPO_APPLE_TEAM_TYPE` and `EXPO_APPLE_TEAM_ID`) are properly configured in `eas.json`.
 
-## Purpose
+## Expected Behavior
 
-The main goal of this monorepo is to maintain a collection of isolated, well-documented experiments that can be used to demonstrate specific functionalities, reproduce issues, or showcase implementation approaches in React Native development.
+When running `eas build --local --platform ios`, the CLI should automatically use the Apple Team ID and Team Type from the environment variables without prompting for manual selection.
 
-## Project Structure
+## Actual Behavior
 
-The monorepo consists of the following main components:
+The CLI prompts for Apple Team ID and Team Type selection on every local build, ignoring the configured environment variables in `eas.json`.
 
-### Main Application
+**Note**: When setting the environment variables directly in the command (e.g., `EXPO_APPLE_TEAM_ID=B9A7V7HR98 eas build --local --platform ios`), the CLI works as expected and does not prompt for manual selection. This confirms that the issue is specifically with environment variable resolution from `eas.json`.
 
-- `noonexperiments-expo-app`: The primary React Native Expo application where all experiments are implemented and run.
+## Visual Comparison
 
-### Supplementary Projects
+| Environment Variables in `eas.json` | Environment Variables in Command |
+|-------------------------------------|-----------------------------------|
+| <img width="1608" height="1044" alt="set env via eas.json" src="https://github.com/user-attachments/assets/5f55f4cf-c5a8-48f8-9c51-35f692921efa" /> | <img width="1512" height="982" alt="set env in command" src="https://github.com/user-attachments/assets/38386ace-697f-476a-9a1a-27481fa9bdda" /> |
+| ❌ CLI prompts for manual selection | ✅ CLI works automatically |
 
-Additional projects that support the main application:
+## Environment Configuration
 
-- `noonexperiments-firebase`: Firebase-related resources (emulators, Cloud Functions)
-- `noonexperiments-backend`: Backend services and APIs
-- Additional supporting projects as needed for specific experiments
+I have configured the following environment variables in my `eas.json`:
 
-Each supplementary project is designed to provide the necessary infrastructure and services to support various experiments in the main application.
-
-## Branch Naming Convention
-
-Each experiment should be in its own branch following the naming pattern:
-
+```json
+{
+  "cli": {
+    "version": ">= 16.19.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_APPLE_TEAM_TYPE": "COMPANY_OR_ORGANIZATION",
+        "EXPO_APPLE_TEAM_ID": "B9A7V7HR98"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_APPLE_TEAM_TYPE": "COMPANY_OR_ORGANIZATION",
+        "EXPO_APPLE_TEAM_ID": "B9A7V7HR98"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_APPLE_TEAM_TYPE": "COMPANY_OR_ORGANIZATION",
+        "EXPO_APPLE_TEAM_ID": "B9A7V7HR98"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
 ```
-experiments-[LIBRARY]-[SPECIFIC-FEATURE-OR-ISSUE]
-```
 
-Examples:
+## Technical Analysis
 
-- `experiments-webview-post-message`
-- `experiments-expo-share-intent`
-- `experiments-firebase-deep-linking`
-- `experiments-react-navigation-modal-stack`
+After analyzing the relevant source code:
 
-This naming convention helps in quickly identifying the purpose and scope of each experiment branch.
+- [`resolveAppleTeamAsync`](https://github.com/expo/eas-cli/blob/95155681db4ed7666bf7b5a7c5f9873625ac9b17/packages/eas-cli/src/credentials/ios/appstore/resolveCredentials.ts#L171-L184)
+- [`getAppleTeamTypeFromEnvironmentOrOptionsAsync`](https://github.com/expo/eas-cli/blob/95155681db4ed7666bf7b5a7c5f9873625ac9b17/packages/eas-cli/src/credentials/ios/appstore/resolveCredentials.ts#L146-L168)
+
+The environment variables should be properly resolved, but the CLI is not recognizing them during local builds e.g `eas build --local`.
+
+## Impact
+
+This issue impacts developer productivity as it requires manual intervention for every local build, defeating the purpose of automated credential management.
+
+## Steps to Reproduce
+
+1. Configure `EXPO_APPLE_TEAM_TYPE` and `EXPO_APPLE_TEAM_ID` in `eas.json` as shown above
+2. Run `eas build --local --platform ios`
+3. Observe that the CLI still prompts for Apple Team ID selection
+
+## Expected Resolution
+
+The CLI should automatically detect and use the environment variables from `eas.json` without requiring manual selection.
