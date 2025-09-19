@@ -8,7 +8,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "eas:build:development:ios": "eas build --local -e development -p ios --output ./build/build-development-$(date +%s).ipa",
+    "eas:build:development:android": "eas build --local -e development -p android --output ./build/build-development-$(date +%s).apk",
+    "eas:build:production:ios": "eas build --local -e production -p ios --output ./build/build-production-$(date +%s).ipa",
+    "eas:build:production:android": "eas build --local -e production -p android --output ./build/build-production-$(date +%s).aab",
+    "eas:submit:production:android": "time eas submit --platform android --profile production",
+    "eas:submit:production:ios": "time eas submit --platform ios --profile production",
+    "eas:clean:local:artifacts": "rm -f builds/build-*.{apk,aab,ipa}"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -17,6 +24,7 @@
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.8",
     "expo-constants": "~18.0.9",
+    "expo-dev-client": "~6.0.12",
     "expo-font": "~14.0.8",
     "expo-haptics": "~15.0.7",
     "expo-image": "~3.0.8",

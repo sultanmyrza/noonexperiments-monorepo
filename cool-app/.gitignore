@@ -44,3 +44,8 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Expo eas build files (Android & iOS)
+builds/build-*.apk 
+builds/build-*.aab 
+builds/build-*.ipa 
